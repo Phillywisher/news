@@ -9,7 +9,6 @@ exports.selectTopics = () => {
 
 exports.fetchEndpoints = () => {
   return fs.readFile("endpoints.json", "utf-8").then((endpoints) => {
-    console.log(endpoints);
     return JSON.parse(endpoints);
   });
 };
