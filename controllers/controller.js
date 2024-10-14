@@ -25,7 +25,6 @@ exports.getEndpoints = (req, res, next) => {
 };
 
 exports.getArticleById = (req, res, next) => {
-  console.log("from conrtorller");
   const { article_id } = req.params;
   selectArticleById(article_id)
     .then((article) => {

@@ -15,7 +15,6 @@ exports.fetchEndpoints = () => {
 };
 
 exports.selectArticleById = (article_id) => {
-  console.log("from model");
   return db
     .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
     .then((result) => {
