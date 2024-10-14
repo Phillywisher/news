@@ -12,12 +12,12 @@ app.get("/api/topics", getTopics);
 
 app.get("/api/articles/:article_id", getArticleById);
 
-app.use((req, res) => {
-  res.status(404).send({ msg: "The requested endpoint does not exist." });
-});
-
 app.all("*", (req, res) => {
   res.status(404).send({ msg: "no endpoint found" });
+});
+app.use((req, res) => {
+  res.status(404).send({ msg: "The endpoint does not exist." });
+  next(err);
 });
 
 app.use((err, req, res, next) => {
