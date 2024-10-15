@@ -149,7 +149,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/not/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
+        expect(body.msg).toBe("Invalid article_id");
       });
   });
   test("404: should return 404 error code and message if  endpoint is the correct type but doesnt have any results.", () => {

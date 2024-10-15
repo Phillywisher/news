@@ -47,9 +47,14 @@ exports.getArticleById = (req, res, next) => {
 exports.getComments = (req, res, next) => {
   const { article_id } = req.params;
   const articleIdNumber = parseInt(article_id, 10);
+
   if (articleIdNumber > 9000) {
     return res.status(404).send({ msg: "ITS OVER 9000!!!" });
   }
+  if (isNaN(articleIdNumber)) {
+    return res.status(400).send({ msg: "Invalid article_id" });
+  }
+
   fetchComments(articleIdNumber)
     .then((comments) => {
       return res.status(200).send({ comments });
