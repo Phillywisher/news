@@ -4,6 +4,7 @@ const {
   selectArticleById,
   fetchArticles,
   fetchComments,
+  createComment,
 } = require("../models/model");
 
 exports.getTopics = (req, res, next) => {
@@ -58,6 +59,22 @@ exports.getComments = (req, res, next) => {
   fetchComments(articleIdNumber)
     .then((comments) => {
       return res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+exports.postComment = (req, res, next) => {
+  const { article_id } = req.params;
+  const { body } = req;
+  const promises = [
+    selectArticleById(article_id),
+    createComment(article_id, body),
+  ];
+  Promise.all(promises)
+    .then((data) => {
+      const comment = data[0];
+      res.status(200).send({ comment: comment });
     })
     .catch((err) => {
       next(err);

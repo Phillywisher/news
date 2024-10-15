@@ -1,5 +1,6 @@
 const db = require("../db/connection.js");
 const fs = require("fs/promises");
+const format = require("pg-format");
 
 exports.selectTopics = () => {
   return db.query("SELECT * FROM topics;").then((result) => {
@@ -56,4 +57,18 @@ exports.selectArticleById = (article_id) => {
       }
       return article;
     });
+};
+exports.createComment = (id, body) => {
+  const bodyArr = [body.body, 0, body.username, id];
+  const comment = format(
+    `INSERT INTO comments
+    (body, votes, author, article_id)
+    VALUES %L
+    RETURNING *;
+    `,
+    [bodyArr]
+  );
+  return db.query(comment).then((comment) => {
+    return comment.rows[0];
+  });
 };
