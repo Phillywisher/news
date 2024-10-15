@@ -1,18 +1,17 @@
 const db = require("../db/connection.js");
 const fs = require("fs/promises");
+const format = require("pg-format");
 
 exports.selectTopics = () => {
   return db.query("SELECT * FROM topics;").then((result) => {
     return result.rows;
   });
 };
-
 exports.fetchEndpoints = () => {
   return fs.readFile("endpoints.json", "utf-8").then((endpoints) => {
     return JSON.parse(endpoints);
   });
 };
-
 exports.fetchArticles = () => {
   return db
     .query(
@@ -32,7 +31,22 @@ exports.fetchArticles = () => {
       return articles.rows;
     });
 };
+exports.fetchComments = (articleId) => {
+  return db
+    .query(
+      `SELECT * FROM comments
+        WHERE article_id = $1
+        ORDER BY created_at DESC`,
+      [articleId]
+    )
+    .then((comments) => {
+      if (comments.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      }
 
+      return comments.rows;
+    });
+};
 exports.selectArticleById = (article_id) => {
   return db
     .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
@@ -43,4 +57,18 @@ exports.selectArticleById = (article_id) => {
       }
       return article;
     });
+};
+exports.createComment = (id, body) => {
+  const bodyArr = [body.body, 0, body.username, id];
+  const comment = format(
+    `INSERT INTO comments
+    (body, votes, author, article_id)
+    VALUES %L
+    RETURNING *;
+    `,
+    [bodyArr]
+  );
+  return db.query(comment).then((comment) => {
+    return comment.rows[0];
+  });
 };
