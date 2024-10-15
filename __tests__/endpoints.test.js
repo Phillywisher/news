@@ -4,7 +4,7 @@ const db = require("../db/connection.js");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data");
 const endpoints = require("../endpoints.json");
-
+const _ = require("lodash");
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 
@@ -70,6 +70,41 @@ describe("GET /api/articles/:article_id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("article does not exist");
+      });
+  });
+});
+
+describe("GET /api/articles", () => {
+  test("GET: 200 Should respond with 200 status code and all current articles with their comment counts.", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(Array.isArray(body.articles)).toBe(true);
+        expect(body.articles.length).toBeGreaterThan(0);
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String || Number),
+          });
+          expect(article).not.toHaveProperty("body");
+        });
+      });
+  });
+  test("GET: 200 articles should be ordered by date in desending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        const sortExpected = _.orderBy(articles, ["date"], ["desc"]);
+        expect(articles).toEqual(sortExpected);
       });
   });
 });
