@@ -9,13 +9,11 @@ exports.selectTopics = () => {
 
 exports.fetchEndpoints = () => {
   return fs.readFile("endpoints.json", "utf-8").then((endpoints) => {
-    console.log(endpoints);
     return JSON.parse(endpoints);
   });
 };
 
 exports.selectArticleById = (article_id) => {
-  console.log("from model");
   return db
     .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
     .then((result) => {
