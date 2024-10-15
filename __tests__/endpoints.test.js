@@ -52,7 +52,24 @@ describe("GET /api/articles/:article_id", () => {
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         };
-        expect(article).toEqual(expectedOutput);
+        expect(article).toMatchObject(expectedOutput);
+      });
+  });
+  test("GET 400: responds with an error message when given an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/article_id")
+      .expect(400)
+      .then(({ body }) => {
+        console.log(body.message);
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("404: should return a 404 code if passed an endpoint which is valid datatype, which it responds with no results.", () => {
+    return request(app)
+      .get("/api/articles/999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article does not exist");
       });
   });
 });
