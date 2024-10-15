@@ -60,7 +60,6 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/article_id")
       .expect(400)
       .then(({ body }) => {
-        console.log(body.message);
         expect(body.msg).toBe("Bad request");
       });
   });
