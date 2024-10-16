@@ -214,3 +214,52 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: should patch the article from articleID, increasing its votes property by the amount passed", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article.votes).toBe(105);
+      });
+  });
+  test("200: should patch the article from articleID, decreasing its votes by the amount passed in", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -10 })
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article.votes).toBe(90);
+      });
+  });
+  test("400: should give an error if an invalid value is passed into our inc_votes property", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "no lookin good brev" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("400: should give an error if an invalid value type is passed into our endpoint for article_id", () => {
+    return request(app)
+      .patch("/api/articles/nope")
+      .send({ inc_votes: 10 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("404: should give an error if a valid type is passed into our endpoint for article_id but it doesnt match any existing article which then will be giving us a bad request message", () => {
+    return request(app)
+      .patch("/api/articles/100")
+      .send({ inc_votes: 10 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+});
