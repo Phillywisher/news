@@ -40,10 +40,6 @@ exports.fetchComments = (articleId) => {
       [articleId]
     )
     .then((comments) => {
-      if (comments.rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "Not found" });
-      }
-
       return comments.rows;
     });
 };
@@ -85,5 +81,13 @@ exports.patchArticleVotes = (article_id, votes) => {
         return Promise.reject({ status: 404, msg: "Not found" });
       }
       return rows[0];
+    });
+};
+
+exports.removeComments = (comment) => {
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1;`, [comment])
+    .then(() => {
+      return { msg: "successfully deleted" };
     });
 };

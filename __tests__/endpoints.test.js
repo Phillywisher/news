@@ -43,7 +43,7 @@ describe("GET /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const article = body.article;
-        expect(article).toMatchObject({
+        const expectedOutput = {
           article_id: 1,
           title: "Living in the shadow of a great man",
           topic: "mitch",
@@ -53,7 +53,8 @@ describe("GET /api/articles/:article_id", () => {
           votes: 100,
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        });
+        };
+        expect(article).toMatchObject(expectedOutput);
       });
   });
   test("GET 400: responds with an error message when given an invalid article_id", () => {
@@ -73,6 +74,7 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 });
+
 describe("GET /api/articles", () => {
   test("GET: 200 Should respond with 200 status code and all current articles with their comment counts.", () => {
     return request(app)
@@ -141,12 +143,20 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
+  test("200: should return an empty array when passed an article that does exist but doesnt have any comments", () => {
+    return request(app)
+      .get("/api/articles/13/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(0);
+      });
+  });
   test("400: to be 400 error code and message if endpoint is of wrong type or formatted incorrectly.", () => {
     return request(app)
       .get("/api/articles/not/comments")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid article_id");
+        expect(body.msg).toBe("Bad request");
       });
   });
   test("404: should return 404 error code and message if  endpoint is the correct type but doesnt have any results.", () => {
@@ -154,62 +164,54 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/5000/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Not found");
+        expect(body.msg).toBe("article does not exist");
       });
   });
-  test("404: should return a error code of 404 and a message of `ITS OVER 9000!!!` when given the correct type but doesnt have any results", () => {
+});
+describe("POST /api/articles/:article_id/comments", () => {
+  test("200: should post a new comment to the comments table with the endpoint of article_id and respond with the comment object upon completion.", () => {
     return request(app)
-      .get("/api/articles/9001/comments")
+      .post("/api/articles/2/comments")
+      .send({
+        username: "rogersop",
+        body: "maybe i should go and touch some grass",
+      })
+      .expect(200)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(typeof comment.body).toEqual("string");
+        expect(typeof comment.votes).toEqual("number");
+        expect(typeof comment.author).toEqual("string");
+        expect(typeof comment.article_id).toEqual("number");
+        expect(typeof comment.created_at).toEqual("string");
+      });
+  });
+  test("400: should return an error and message if a user who doesnt exist.", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "Imposter", body: "Syndrome" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("400: should return an error and message if a end point of an article is a invalid type.", () => {
+    return request(app)
+      .post("/api/articles/wrong/comments")
+      .send({ username: "Imposter", body: "Syndrome" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("404: should return an error and message if the end point is a valid type, however no article exists for the comment to be on.", () => {
+    return request(app)
+      .post("/api/articles/619/comments")
+      .send({ username: "Imposter", body: "Syndrome" })
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("ITS OVER 9000!!!");
+        expect(body.msg).toBe("article does not exist");
       });
-  });
-  describe("POST /api/articles/:article_id/comments", () => {
-    test("200: should post a new comment to the comments table with the endpoint of article_id and respond with the comment object upon completion.", () => {
-      return request(app)
-        .post("/api/articles/2/comments")
-        .send({
-          username: "rogersop",
-          body: "maybe i should go and touch some grass",
-        })
-        .expect(200)
-        .then(({ body }) => {
-          const comment = body.comment;
-          expect(typeof comment.body).toEqual("string");
-          expect(typeof comment.votes).toEqual("number");
-          expect(typeof comment.author).toEqual("string");
-          expect(typeof comment.article_id).toEqual("number");
-          expect(typeof comment.created_at).toEqual("string");
-        });
-    });
-    test("400: should return an error and message if a user who doesnt exist.", () => {
-      return request(app)
-        .post("/api/articles/2/comments")
-        .send({ username: "Imposter", body: "Syndrome" })
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Bad request");
-        });
-    });
-    test("400: should return an error and message if a end point of an article is a invalid type.", () => {
-      return request(app)
-        .post("/api/articles/wrong/comments")
-        .send({ username: "Imposter", body: "Syndrome" })
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Bad request");
-        });
-    });
-    test("404: should return an error and message if the end point is a valid type, however no article exists for the comment to be on.", () => {
-      return request(app)
-        .post("/api/articles/619/comments")
-        .send({ username: "Imposter", body: "Syndrome" })
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("article does not exist");
-        });
-    });
   });
 });
 describe("PATCH /api/articles/:article_id", () => {

@@ -48,17 +48,12 @@ exports.getArticleById = (req, res, next) => {
 
 exports.getComments = (req, res, next) => {
   const { article_id } = req.params;
-  const articleIdNumber = parseInt(article_id, 10);
-
-  if (articleIdNumber > 9000) {
-    return res.status(404).send({ msg: "ITS OVER 9000!!!" });
-  }
-  if (isNaN(articleIdNumber)) {
-    return res.status(400).send({ msg: "Invalid article_id" });
-  }
-  fetchComments(articleIdNumber)
+  selectArticleById(article_id)
+    .then(() => {
+      return fetchComments(article_id);
+    })
     .then((comments) => {
-      return res.status(200).send({ comments: comments });
+      return res.status(200).send({ comments });
     })
     .catch((err) => {
       next(err);
@@ -86,7 +81,6 @@ exports.patchArticleById = (req, res, next) => {
   if (isNaN(inc_votes)) {
     return res.status(400).send({ msg: "Bad request" });
   }
-
   patchArticleVotes(article_id, inc_votes)
     .then((updatedArticle) => {
       res.status(200).send({ article: updatedArticle });
