@@ -7,6 +7,7 @@ const {
   createComment,
   patchArticleVotes,
   removeCommentbyId,
+  selectUsers,
 } = require("../models/model");
 
 exports.getTopics = (req, res, next) => {
@@ -18,6 +19,18 @@ exports.getTopics = (req, res, next) => {
       next(err);
     });
 };
+
+exports.getUsers = (req, res, next) => {
+  selectUsers()
+    .then((users) => {
+      console.log(users);
+      res.status(200).send({ users });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
 exports.getEndpoints = (req, res, next) => {
   fetchEndpoints()
     .then((endpoints) => {

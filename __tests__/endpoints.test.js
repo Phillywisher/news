@@ -264,7 +264,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 describe("/api/comments/:comment_id", () => {
-  test("DELETE:204, delete the specified comment", () => {
+  test("204: delete the specified comment", () => {
     return request(app)
       .delete("/api/comments/1")
       .expect(204)
@@ -272,7 +272,7 @@ describe("/api/comments/:comment_id", () => {
         expect(res.statusCode).toBe(204);
       });
   });
-  test("DELETE:404, responds with an appropriate error message when given a non-existent comment_id", () => {
+  test("404: responds with an appropriate error message when given a non-existent comment_id", () => {
     return request(app)
       .delete("/api/comments/99999")
       .expect(404)
@@ -280,12 +280,28 @@ describe("/api/comments/:comment_id", () => {
         expect(response.body.msg).toBe("no endpoint found");
       });
   });
-  test("DELETE:400, responds with an appropriate error message when given a invalid comment_id", () => {
+  test("400: responds with an appropriate error message when given a invalid comment_id", () => {
     return request(app)
       .delete("/api/comments/not-a-comment")
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad request");
+      });
+  });
+});
+describe("/api/users", () => {
+  test("GET:200, an array of objects, each of which should have a username, name and avatar_url", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.users).toEqual(expect.any(Array));
+        expect(response.body.users).not.toHaveLength(0);
+        response.body.users.forEach((user) => {
+          expect(Object.keys(user)).toEqual(
+            expect.arrayContaining(["username", "name", "avatar_url"])
+          );
+        });
       });
   });
 });
