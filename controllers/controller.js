@@ -55,10 +55,9 @@ exports.getComments = (req, res, next) => {
   if (isNaN(articleIdNumber)) {
     return res.status(400).send({ msg: "Invalid article_id" });
   }
-
   fetchComments(articleIdNumber)
     .then((comments) => {
-      return res.status(200).send({ comments });
+      return res.status(200).send({ comments: comments });
     })
     .catch((err) => {
       next(err);
