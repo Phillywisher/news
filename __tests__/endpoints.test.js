@@ -263,3 +263,29 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+describe("/api/comments/:comment_id", () => {
+  test("DELETE:204, delete the specified comment", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then((res) => {
+        expect(res.statusCode).toBe(204);
+      });
+  });
+  test("DELETE:404, responds with an appropriate error message when given a non-existent comment_id", () => {
+    return request(app)
+      .delete("/api/comments/99999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("no endpoint found");
+      });
+  });
+  test("DELETE:400, responds with an appropriate error message when given a invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/not-a-comment")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request");
+      });
+  });
+});

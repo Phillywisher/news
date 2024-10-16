@@ -6,6 +6,7 @@ const {
   fetchComments,
   createComment,
   patchArticleVotes,
+  removeCommentbyId,
 } = require("../models/model");
 
 exports.getTopics = (req, res, next) => {
@@ -84,6 +85,19 @@ exports.patchArticleById = (req, res, next) => {
   patchArticleVotes(article_id, inc_votes)
     .then((updatedArticle) => {
       res.status(200).send({ article: updatedArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  if (isNaN(comment_id)) {
+    return res.status(400).send({ msg: "Bad request" });
+  }
+  removeCommentbyId(comment_id)
+    .then(() => {
+      res.status(204).send();
     })
     .catch((err) => {
       next(err);
