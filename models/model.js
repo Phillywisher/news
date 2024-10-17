@@ -18,25 +18,63 @@ exports.fetchEndpoints = () => {
     return JSON.parse(endpoints);
   });
 };
-exports.fetchArticles = () => {
-  return db
-    .query(
-      `SELECT 
-    articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.article_img_url, articles.votes,
-    COUNT(comments.comment_id) AS comment_count 
+
+exports.fetchArticles = (query) => {
+  const sortBy = query.sort_by || "created_at";
+  const order = query.order_by || "desc";
+  const topic = query.topic;
+
+  const validSortByColumns = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "created_at",
+    "article_img_url",
+    "votes",
+    "comment_count",
+  ];
+  const validOrder = ["desc", "asc"];
+
+  if (!validSortByColumns.includes(sortBy)) {
+    return Promise.reject({ status: 400, msg: "Invalid sort_by column" });
+  }
+
+  if (!validOrder.includes(order.toLowerCase())) {
+    return Promise.reject({ status: 400, msg: "Invalid order query" });
+  }
+  let queryStr = `
+    SELECT 
+      articles.article_id, 
+      articles.title, 
+      articles.topic, 
+      articles.author, 
+      articles.created_at, 
+      articles.article_img_url, 
+      articles.votes,
+      COUNT(comments.comment_id) AS comment_count 
     FROM articles
-    LEFT JOIN comments
-    on articles.article_id = comments.article_id
-    GROUP BY articles.article_id, articles.title,articles.topic, articles.author, articles.created_at, articles.article_img_url
-    ORDER BY created_at DESC;`
-    )
-    .then((articles) => {
-      if (articles.rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "Not found" });
-      }
-      return articles.rows;
-    });
+    LEFT JOIN comments ON articles.article_id = comments.article_id
+  `;
+
+  let queryValues = [];
+
+  if (topic) {
+    queryStr += ` WHERE articles.topic = $1`;
+    queryValues.push(topic);
+  }
+
+  queryStr += ` GROUP BY articles.article_id ORDER BY ${sortBy} ${order.toUpperCase()}`;
+
+  return db.query(queryStr, queryValues).then((result) => {
+    const articles = result.rows;
+    if (articles.length === 0) {
+      return Promise.reject({ status: 404, msg: "Not found" });
+    }
+    return articles;
+  });
 };
+
 exports.fetchComments = (articleId) => {
   return db
     .query(

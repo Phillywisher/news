@@ -23,7 +23,6 @@ exports.getTopics = (req, res, next) => {
 exports.getUsers = (req, res, next) => {
   selectUsers()
     .then((users) => {
-      console.log(users);
       res.status(200).send({ users });
     })
     .catch((err) => {
@@ -41,7 +40,8 @@ exports.getEndpoints = (req, res, next) => {
     });
 };
 exports.getArticles = (req, res, next) => {
-  fetchArticles()
+  const { sort_by, order_by, topic } = req.query;
+  fetchArticles({ sort_by, order_by, topic })
     .then((articles) => {
       res.status(200).send({ articles: articles });
     })
