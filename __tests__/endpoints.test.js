@@ -108,8 +108,61 @@ describe("GET /api/articles", () => {
         expect(articles).toEqual(sortExpected);
       });
   });
-});
+  test("200: Should sort articles by created_at in descending order by default", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSorted({ key: "created_at", descending: true });
+      });
+  });
+  test("200: should return articles by sort_by in acesdening order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        const sortExpected = _.orderBy(articles, ["sort_by"], ["asc"]);
+        expect(articles).toEqual(sortExpected);
+      });
+  });
+  test("200: should return articles by sort_by in acesdening order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        const sortExpected = _.orderBy(articles, ["sort_by"], ["asc"]);
+        expect(articles).toEqual(sortExpected);
+      });
+  });
+  test("400: should return with a 400 status code and an error message if a valid topic data type is filtered as parameter but it does not match any related topics.", () => {
+    return request(app)
+      .get("/api/articles?topic=notopic")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
 
+  test("400: should respond with a 400 status code if either or both of the query parameters do not do not coincide with what is allowed in the valid columns", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order_by=incorrectOrder")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid order query");
+      });
+  });
+  test("400: should respond with a 400 status code if either or both of the query parameters do not coincide with what is allowed in the valid columns", () => {
+    return request(app)
+      .get("/api/articles?sort_by=incorrect&order_by=asc")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid sort_by column");
+      });
+  });
+});
 describe("GET /api/articles/:article_id/comments", () => {
   test("200: Should respond with an array of all comments for given article ID", () => {
     return request(app)
