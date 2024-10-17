@@ -137,26 +137,26 @@ describe("GET /api/articles", () => {
         expect(articles).toEqual(sortExpected);
       });
   });
-  test("400: should return with a 400 status code and an error message if a valid topic data type is inserted as a query parameter, but no topics exist matching it.", () => {
+  test("400: should return with a 400 status code and an error message if a valid topic data type is filtered as parameter but it does not match any related topics.", () => {
     return request(app)
-      .get("/api/articles?topic=badtopic")
+      .get("/api/articles?topic=notopic")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Not found");
       });
   });
 
-  test("400: should respond with a 400 status code if either or both of the query parameters do not match what is allowed", () => {
+  test("400: should respond with a 400 status code if either or both of the query parameters do not do not coincide with what is allowed in the valid columns", () => {
     return request(app)
-      .get("/api/articles?sort_by=author&order_by=wrong")
+      .get("/api/articles?sort_by=author&order_by=incorrectOrder")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid order query");
       });
   });
-  test("400: should respond with a 400 status code if either or both of the query parameters do not match what is allowed", () => {
+  test("400: should respond with a 400 status code if either or both of the query parameters do not coincide with what is allowed in the valid columns", () => {
     return request(app)
-      .get("/api/articles?sort_by=wrong&order_by=asc")
+      .get("/api/articles?sort_by=incorrect&order_by=asc")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid sort_by column");
