@@ -13,7 +13,7 @@ const {
 exports.getTopics = (req, res, next) => {
   selectTopics()
     .then((topics) => {
-      res.status(200).send({ topics });
+      res.status(200).send({ topics: topics });
     })
     .catch((err) => {
       next(err);
@@ -40,8 +40,9 @@ exports.getEndpoints = (req, res, next) => {
     });
 };
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order_by, topic } = req.query;
-  fetchArticles({ sort_by, order_by, topic })
+  const { sort_by, order_by, topic, slug } = req.query;
+
+  fetchArticles({ sort_by, order_by, topic, slug })
     .then((articles) => {
       res.status(200).send({ articles: articles });
     })
