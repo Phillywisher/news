@@ -137,7 +137,7 @@ describe("GET /api/articles", () => {
         expect(articles).toEqual(sortExpected);
       });
   });
-  describe.only("BREAK UP TESTS WITH THIS BLOCK /////////////////////////", () => {
+  describe("BREAK UP TESTS WITH THIS BLOCK /////////////////////////", () => {
     test("400: should return with a 400 status code and an error message if a valid topic data type is filtered as parameter but it does not match any related topics.", () => {
       return request(app)
         .get("/api/articles?topic=notopic")
