@@ -137,30 +137,90 @@ describe("GET /api/articles", () => {
         expect(articles).toEqual(sortExpected);
       });
   });
-  test("400: should return with a 400 status code and an error message if a valid topic data type is filtered as parameter but it does not match any related topics.", () => {
-    return request(app)
-      .get("/api/articles?topic=notopic")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Not found");
-      });
-  });
+  describe("BREAK UP TESTS WITH THIS BLOCK /////////////////////////", () => {
+    test("400: should return with a 400 status code and an error message if a valid topic data type is filtered as parameter but it does not match any related topics.", () => {
+      return request(app)
+        .get("/api/articles?topic=notopic")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Not found");
+        });
+    });
 
-  test("400: should respond with a 400 status code if either or both of the query parameters do not do not coincide with what is allowed in the valid columns", () => {
-    return request(app)
-      .get("/api/articles?sort_by=author&order_by=incorrectOrder")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid order query");
-      });
-  });
-  test("400: should respond with a 400 status code if either or both of the query parameters do not coincide with what is allowed in the valid columns", () => {
-    return request(app)
-      .get("/api/articles?sort_by=incorrect&order_by=asc")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid sort_by column");
-      });
+    test("400: should respond with a 400 status code if either or both of the query parameters do not do not coincide with what is allowed in the valid columns", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author&order_by=incorrectOrder")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid order query");
+        });
+    });
+    test("400: should respond with a 400 status code if either or both of the query parameters do not coincide with what is allowed in the valid columns", () => {
+      return request(app)
+        .get("/api/articles?sort_by=incorrect&order_by=asc")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid sort_by column");
+        });
+    });
+    //topics queries
+    test("200: should return articles by topic in acesdening order", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.articles;
+          const sortExpected = _.orderBy(articles, ["topic"], ["asc"]);
+          expect(articles).toEqual(sortExpected);
+        });
+    });
+    test("200: should return articles by topic in decsending order", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&order_by=desc")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.articles;
+          const sortExpected = _.orderBy(articles, ["topic"], ["desc"]);
+          expect(articles).toEqual(sortExpected);
+        });
+    });
+    //////
+    test("both querys can be used in tandom", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch&author=icellusedkars")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.articles;
+          expect(articles[0].author).toEqual("icellusedkars");
+          expect(articles[0].topic).toEqual("mitch");
+        });
+    });
+    //////////////
+    test("both querys can be used in tandom testing out edgecases", () => {
+      return request(app)
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body }) => {
+          const articles = body.articles;
+          expect(articles[0].topic).toEqual("mitch");
+        });
+    });
+    test("should return a 404 error if given a topic that doesnt exist", () => {
+      return request(app)
+        .get("/api/articles?topic=Will")
+        .expect(404)
+        .then((body) => {
+          expect(body.status).toEqual(404);
+        });
+    });
+    test("should return an empty array if given a topic with no articles", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.articles).toEqual([]);
+        });
+    });
   });
 });
 describe("GET /api/articles/:article_id/comments", () => {

@@ -1,5 +1,6 @@
 const db = require("../db/connection.js");
 const fs = require("fs/promises");
+const { zip } = require("lodash");
 const format = require("pg-format");
 
 exports.selectTopics = () => {
@@ -23,7 +24,6 @@ exports.fetchArticles = (query) => {
   const sortBy = query.sort_by || "created_at";
   const order = query.order_by || "desc";
   const topic = query.topic;
-
   const validSortByColumns = [
     "article_id",
     "title",
@@ -43,6 +43,7 @@ exports.fetchArticles = (query) => {
   if (!validOrder.includes(order.toLowerCase())) {
     return Promise.reject({ status: 400, msg: "Invalid order query" });
   }
+
   let queryStr = `
     SELECT 
       articles.article_id, 
@@ -68,8 +69,16 @@ exports.fetchArticles = (query) => {
 
   return db.query(queryStr, queryValues).then((result) => {
     const articles = result.rows;
-    if (articles.length === 0) {
-      return Promise.reject({ status: 404, msg: "Not found" });
+    if (articles.length === 0 && topic) {
+      return db
+        .query(`SELECT * FROM topics WHERE slug = $1`, [topic])
+        .then(({ rows }) => {
+          if (rows.length === 0) {
+            return Promise.reject({ status: 404, msg: "Not found" });
+          } else {
+            return [];
+          }
+        });
     }
     return articles;
   });
