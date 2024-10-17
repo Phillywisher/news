@@ -7,6 +7,12 @@ exports.selectTopics = () => {
     return result.rows;
   });
 };
+
+exports.selectUsers = () => {
+  return db.query(`SELECT * FROM users;`).then((result) => {
+    return result.rows;
+  });
+};
 exports.fetchEndpoints = () => {
   return fs.readFile("endpoints.json", "utf-8").then((endpoints) => {
     return JSON.parse(endpoints);
