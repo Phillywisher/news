@@ -2,7 +2,7 @@
 
 ## Check out my linkedIn
 
-Click it i dare ya --> [\LinkedIn\]](<[LinkedIn](https://www.linkedin.com/in/phillywisher/)>)
+Click it i dare ya --> [\LinkedIn\]](https://www.linkedin.com/in/phillywisher/)
 
 ## Hosted Version
 
