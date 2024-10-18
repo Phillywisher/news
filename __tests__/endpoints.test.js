@@ -73,6 +73,32 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe("article does not exist");
       });
   });
+  test("200: responds with an article, including the comment count as a number NOT A STRING!", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toHaveProperty("article_id", 1);
+        expect(body.article).toHaveProperty("title");
+        expect(body.article).toHaveProperty("topic");
+        expect(body.article).toHaveProperty("author");
+        expect(body.article).toHaveProperty("body");
+        expect(body.article).toHaveProperty("created_at");
+        expect(body.article).toHaveProperty("article_img_url");
+        expect(body.article).toHaveProperty("votes");
+        expect(body.article).toHaveProperty("comment_count");
+        expect(typeof body.article.comment_count).toBe("number");
+      });
+  });
+
+  test("404: responds with a 404 error if the article is not found", () => {
+    return request(app)
+      .get("/api/articles/99999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article does not exist");
+      });
+  });
 });
 
 describe("GET /api/articles", () => {
