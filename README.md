@@ -2,11 +2,11 @@
 
 ## Check out my linkedIn
 
-Click it i dare ya --> [\LinkedIn\]](https://www.linkedin.com/in/phillywisher/)
+Click it i dare ya --> [LinkedIn](https://www.linkedin.com/in/phillywisher/)
 
 ## Hosted Version
 
-Visit the live version of the project here: [\[Depoyled URL\]](https://the-news-manc-times.onrender.com/api)
+Visit the live version of the project [here](https://the-news-manc-times.onrender.com/api)
 
 ---
 
@@ -30,8 +30,8 @@ Below is a small guide on cloning this repo, setting up, and seeding.
 1. **Clone the repository**
 
 ```bash
-git https://github.com/Phillywisher/news.git
-cd news
+git clone https://github.com/Phillywisher/news.git
+cd BE-NC-NEWS
 ```
 
 2. **Install dependencies**
