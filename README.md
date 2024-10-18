@@ -2,11 +2,11 @@
 
 ## Check out my linkedIn
 
-Click it i dare ya --> [\LinkedIn\]](https://www.linkedin.com/in/phillywisher/)
+Click it i dare ya --> [LinkedIn](https://www.linkedin.com/in/phillywisher/)
 
 ## Hosted Version
 
-Visit the live version of the project here: [\[Depoyled URL\]](https://the-news-manc-times.onrender.com/api)
+Visit the live version of the project [here](https://the-news-manc-times.onrender.com/api)
 
 ---
 
@@ -29,14 +29,14 @@ Below is a small guide on cloning this repo, setting up, and seeding.
 
 1. **Clone the repository**
 
-```bash
-git https://github.com/Phillywisher/news.git
-cd news
+```
+git clone https://github.com/Phillywisher/news.git
+cd BE-NC-NEWS
 ```
 
 2. **Install dependencies**
 
-```bash
+```
 npm install
 ```
 
@@ -61,13 +61,13 @@ Make sure that the names of the databases match what you have set up in PostgreS
 
 ## Please note that if you are using macOS that the commands will still match in your terminal which your are most likley using called Zsh
 
-```bash
+```
 npm run setup-dbs
 ```
 
 2. **Seed the development database**:
 
-```bash
+```
 npm run seed
 ```
 
@@ -75,7 +75,7 @@ npm run seed
 
 To run the test suite, execute:
 
-```bash
+```
 npm test
 ```
 
