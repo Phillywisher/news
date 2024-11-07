@@ -83,8 +83,10 @@ exports.postComment = (req, res, next) => {
   ];
   Promise.all(promises)
     .then((data) => {
-      const comment = data[0];
-      res.status(200).send({ comment: comment });
+      console.log(data);
+      const comment = data[1];
+      console.log(comment);
+      res.status(201).send({ comment: comment });
     })
     .catch((err) => {
       next(err);
